@@ -1,0 +1,12 @@
+type Query {
+  dummy: String
+}
+
+type Error {
+  path: String!
+  message: String!
+}
+
+type Mutation {
+  register(email: String!, password: String!): [Error!]
+}
