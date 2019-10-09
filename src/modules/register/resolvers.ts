@@ -3,7 +3,7 @@ import * as bcrypt from "bcrypt";
 import * as yup from "yup";
 import { User } from "../../entity/User";
 import { formatYupErrors } from "../../utils/formatYupErrors";
-import { createConfirmEmailLink } from "../../utils/createConfirmEmailLink";
+import { createConfirmEmailLink } from "./createConfirmEmailLink";
 
 const schema = yup.object().shape({
   email: yup

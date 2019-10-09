@@ -3,8 +3,8 @@ import * as Redis from "ioredis";
 import fetch from "node-fetch";
 
 import { createConfirmEmailLink } from "./createConfirmEmailLink";
-import { User } from "../entity/User";
-import { createTestConn } from "../testUtils/createTestConn";
+import { User } from "../../entity/User";
+import { createTestConn } from "../../testUtils/createTestConn";
 
 const redis = new Redis();
 const baseUrl = "http://localhost:4000";
@@ -42,11 +42,5 @@ describe("Create confirm email link", () => {
     const key = chunks[chunks.length - 1];
     const value = await redis.get(key);
     expect(value).toBeNull();
-  });
-
-  test("sends invalid back if bad id sent", async () => {
-    const response = await fetch(`${baseUrl}/confirm/123456`);
-    const text = await response.text();
-    expect(text).toEqual("ko");
   });
 });
