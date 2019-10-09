@@ -2,9 +2,9 @@ import { Connection } from "typeorm";
 import * as Redis from "ioredis";
 import fetch from "node-fetch";
 
-import { createTestConn } from "../tests/createTestConn";
 import { createConfirmEmailLink } from "./createConfirmEmailLink";
 import { User } from "../entity/User";
+import { createTestConn } from "../testUtils/createTestConn";
 
 const redis = new Redis();
 const baseUrl = "http://localhost:4000";
@@ -14,7 +14,7 @@ let userId = "";
 let connection: Connection;
 
 beforeAll(async () => {
-  connection = await createTestConn();
+  connection = await createTestConn(true);
 
   const user = await User.create({
     email: "bob@bob.com",
@@ -31,8 +31,10 @@ afterAll(async () => {
 describe("Create confirm email link", () => {
   test("Check confirm and clear key in redis cache", async () => {
     const url = await createConfirmEmailLink(baseUrl, userId, redis);
+    console.log(url);
     const response = await fetch(url);
     const text = await response.text();
+    console.log(text);
     expect(text).toEqual("ok");
     const user = await User.findOne({ where: { id: userId } });
     expect((user as User).confirmed).toBeTruthy();

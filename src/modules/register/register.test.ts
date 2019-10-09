@@ -1,9 +1,9 @@
 import { Connection } from "typeorm";
 import * as Redis from "ioredis";
 
-import { graphqlTestCall } from "../../tests/graphqlTestCall";
-import { createTestConn } from "../../tests/createTestConn";
+import { graphqlTestCall } from "../../testUtils/graphqlTestCall";
 import { User } from "../../entity/User";
+import { createTestConn } from "../../testUtils/createTestConn";
 
 const context = {
   redis: new Redis(),
@@ -13,7 +13,7 @@ const context = {
 let connection: Connection;
 
 beforeAll(async () => {
-  connection = await createTestConn();
+  connection = await createTestConn(true);
 });
 
 afterAll(async () => {

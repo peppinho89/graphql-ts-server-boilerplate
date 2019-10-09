@@ -2,11 +2,12 @@ import "reflect-metadata";
 import "dotenv/config";
 import * as express from "express";
 import { ApolloServer } from "apollo-server-express";
-import { createConnection } from "typeorm";
 import * as Redis from "ioredis";
 
 import { createGraphqlSchema } from "./utils/createGraphqlSchema";
 import { User } from "./entity/User";
+import { createTestConn } from "./testUtils/createTestConn";
+import { createTypeormConn } from "./utils/createTypeOrmConn";
 
 var redis = new Redis();
 
@@ -25,7 +26,7 @@ const startServer = async () => {
     const { id } = req.params;
     const userId = await redis.get(id);
     if (userId) {
-      User.update({ id: userId }, { confirmed: true });
+      await User.update({ id: userId }, { confirmed: true });
       await redis.del(id);
       res.send("ok");
     } else {
@@ -35,7 +36,11 @@ const startServer = async () => {
 
   server.applyMiddleware({ app });
 
-  await createConnection();
+  if (process.env.NODE_ENV === "test") {
+    await createTestConn();
+  } else {
+    await createTypeormConn();
+  }
 
   app.listen({ port: 4000 }, () =>
     console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
