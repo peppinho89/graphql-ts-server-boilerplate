@@ -2,7 +2,7 @@
 
 Project Build with NodeJS - GraphQL - TypeScript - TypeORM - Redis and Jest
 
-###Installation:
+### Installation:
 
 1. Clone project
    `https://github.com/peppinho89/graphql-ts-server-boilerplate.git`
