@@ -19,9 +19,9 @@ const RedisStore = connectRedis(session as any);
 const startServer = async () => {
   const server = new ApolloServer({
     schema: createGraphqlSchema(),
-    context: ({ request }: any) => ({
+    context: () => ({
       redis,
-      url: request.protocol + "://" + request.get("host")
+      url: "http://localhost:4000"
     })
   });
 
