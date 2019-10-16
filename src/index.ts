@@ -10,18 +10,19 @@ import { createGraphqlSchema } from "./utils/createGraphqlSchema";
 import { createTestConn } from "./testUtils/createTestConn";
 import { createTypeormConn } from "./utils/createTypeOrmConn";
 import { confirmEmail } from "./routes/confirmEmail";
-import { redisSessionPrefix } from "./constants";
+//import { redisSessionPrefix } from "./constants";
 
 let redis = new Redis();
-const SESSION_SECRET = "ajslkjalksjdfkl";
+const SESSION_SECRET = process.env.SESSION_SECRET;
 const RedisStore = connectRedis(session as any);
 
 const startServer = async () => {
   const server = new ApolloServer({
     schema: createGraphqlSchema(),
-    context: () => ({
+    context: ({ req }) => ({
       redis,
-      url: "http://localhost:4000"
+      url: req.protocol + "://" + req.get("host"),
+      session: req.session
     })
   });
 
@@ -32,8 +33,7 @@ const startServer = async () => {
   app.use(
     session({
       store: new RedisStore({
-        client: redis as any,
-        prefix: redisSessionPrefix
+        client: redis as any
       }),
       name: "qid",
       secret: SESSION_SECRET,

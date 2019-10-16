@@ -30,7 +30,7 @@ export const resolvers: IResolvers = {
     dummy: () => "dummy"
   },
   Mutation: {
-    login: async (_, args: GQL.ILoginOnMutationArguments) => {
+    login: async (_, args: GQL.ILoginOnMutationArguments, { session }: any) => {
       try {
         await schema.validate(args, { abortEarly: false });
       } catch (error) {
@@ -59,6 +59,9 @@ export const resolvers: IResolvers = {
           ];
         }
       }
+
+      //login success
+      session.userId = user.id;
 
       return null;
     }
