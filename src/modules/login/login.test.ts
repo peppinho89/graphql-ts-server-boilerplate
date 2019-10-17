@@ -1,6 +1,6 @@
 import { User } from "../../entity/User";
 import { Connection } from "typeorm";
-import { TestClient } from "../../utils/TestClient";
+import { TestClient } from "../../testUtils/TestClient";
 import { createTestConn } from "../../testUtils/createTestConn";
 
 const email = "bob@bob.com";

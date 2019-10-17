@@ -4,6 +4,7 @@ import * as yup from "yup";
 //import { v4 } from "uuid";
 import { User } from "../../entity/User";
 import { formatYupErrors } from "../../utils/formatYupErrors";
+import { userSessionIdPrefix } from "../../constants";
 //import { sendEmail } from "../../utils/sendEmail";
 
 const schema = yup.object().shape({
@@ -30,7 +31,11 @@ export const resolvers: IResolvers = {
     dummy: () => "dummy"
   },
   Mutation: {
-    login: async (_, args: GQL.ILoginOnMutationArguments, { session }: any) => {
+    login: async (
+      _,
+      args: GQL.ILoginOnMutationArguments,
+      { session, redis, req }: any
+    ) => {
       try {
         await schema.validate(args, { abortEarly: false });
       } catch (error) {
@@ -62,6 +67,10 @@ export const resolvers: IResolvers = {
 
       //login success
       session.userId = user.id;
+
+      if (req.sessionID) {
+        await redis.lpush(`${userSessionIdPrefix}${user.id}`, req.sessionID);
+      }
 
       return null;
     }

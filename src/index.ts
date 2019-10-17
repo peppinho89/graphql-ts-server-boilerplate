@@ -10,7 +10,7 @@ import { createGraphqlSchema } from "./utils/createGraphqlSchema";
 import { createTestConn } from "./testUtils/createTestConn";
 import { createTypeormConn } from "./utils/createTypeOrmConn";
 import { confirmEmail } from "./routes/confirmEmail";
-//import { redisSessionPrefix } from "./constants";
+import { redisSessionPrefix } from "./constants";
 
 let redis = new Redis();
 const SESSION_SECRET = process.env.SESSION_SECRET;
@@ -22,7 +22,8 @@ const startServer = async () => {
     context: ({ req }) => ({
       redis,
       url: req.protocol + "://" + req.get("host"),
-      session: req.session
+      session: req.session,
+      req
     })
   });
 
@@ -33,7 +34,8 @@ const startServer = async () => {
   app.use(
     session({
       store: new RedisStore({
-        client: redis as any
+        client: redis as any,
+        prefix: redisSessionPrefix
       }),
       name: "qid",
       secret: SESSION_SECRET,
