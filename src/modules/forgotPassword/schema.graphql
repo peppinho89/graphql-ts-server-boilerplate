@@ -1,0 +1,13 @@
+type Query {
+  dummy: String
+}
+
+type Mutation {
+  sendForgotPasswordEmail(email: String!): Boolean!
+  forgotPasswordChange(newPassword: String!, key: String!): [Error!]
+}
+
+type Error {
+  path: String!
+  message: String!
+}

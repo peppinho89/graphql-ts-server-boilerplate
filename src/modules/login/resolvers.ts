@@ -50,19 +50,28 @@ export const resolvers: IResolvers = {
         return invalidLoginResponse;
       }
 
+      if (!user.confirmed) {
+        return [
+          {
+            path: "login",
+            message: "please confirm your email"
+          }
+        ];
+      }
+
+      if (user.forgotPasswordLocked) {
+        return [
+          {
+            path: "login",
+            message: "account is locked"
+          }
+        ];
+      }
+
       const isValid = await bcrypt.compare(password, user.password);
 
       if (!isValid) {
         return invalidLoginResponse;
-      } else {
-        if (!user.confirmed) {
-          return [
-            {
-              path: "login",
-              message: "please confirm your email"
-            }
-          ];
-        }
       }
 
       //login success

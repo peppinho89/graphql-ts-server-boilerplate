@@ -5,6 +5,7 @@ import { User } from "../../entity/User";
 import { formatYupErrors } from "../../utils/formatYupErrors";
 import { createConfirmEmailLink } from "./createConfirmEmailLink";
 import { sendEmail } from "../../utils/sendEmail";
+import { passwordValidation } from "../../yupSchemas";
 
 const schema = yup.object().shape({
   email: yup
@@ -12,10 +13,7 @@ const schema = yup.object().shape({
     .min(3)
     .max(255)
     .email(),
-  password: yup
-    .string()
-    .min(3)
-    .max(255)
+  password: passwordValidation
 });
 
 export const resolvers: IResolvers = {
