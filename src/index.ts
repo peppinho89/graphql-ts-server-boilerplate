@@ -11,6 +11,8 @@ import { createTestConn } from "./testUtils/createTestConn";
 import { createTypeormConn } from "./utils/createTypeOrmConn";
 import { confirmEmail } from "./routes/confirmEmail";
 import { redisSessionPrefix } from "./constants";
+import * as RateLimit from "express-rate-limit";
+import * as RateLimitRedisStore from "rate-limit-redis";
 
 let redis = new Redis();
 const SESSION_SECRET = process.env.SESSION_SECRET;
@@ -47,6 +49,16 @@ const startServer = async () => {
         maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
       }
     } as any)
+  );
+
+  app.use(
+    new RateLimit({
+      store: new RateLimitRedisStore({
+        client: redis
+      }),
+      windowMs: 15 * 60 * 1000, //15 minutes
+      max: 100 // limit each IP to 100 requests per windowMs
+    })
   );
 
   const cors = {
