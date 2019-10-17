@@ -1,119 +1,88 @@
-import { Connection } from "typeorm";
-import * as Redis from "ioredis";
-
-import { graphqlTestCall } from "../../testUtils/graphqlTestCall";
 import { User } from "../../entity/User";
+import { Connection } from "typeorm";
+import { TestClient } from "../../utils/TestClient";
 import { createTestConn } from "../../testUtils/createTestConn";
 
-const context = {
-  redis: new Redis(),
-  url: "http://localhost:4000"
-};
+const email = "bob@bob.com";
+const password = "bobby";
 
-let connection: Connection;
-
+let conn: Connection;
 beforeAll(async () => {
-  connection = await createTestConn(true);
+  conn = await createTestConn(true);
 });
-
 afterAll(async () => {
-  await connection.close();
-  context.redis.disconnect();
+  conn.close();
 });
-
-const registerMutation = `
-mutation RegisterMutation($email: String!, $password: String!) {
-  register(email: $email, password: $password){
-    path
-    message
-  }
-}
-`;
 
 describe("Register user", () => {
-  test("Register user", async () => {
-    const testUser = { email: "bob@bob.com", password: "bob" };
+  it("check for duplicate emails", async () => {
+    const client = new TestClient(process.env.TEST_HOST as string);
+    // make sure we can register a user
+    const response = await client.register(email, password);
+    expect(response.data).toEqual({ register: null });
+    const users = await User.find({ where: { email } });
+    expect(users).toHaveLength(1);
+    const user = users[0];
+    expect(user.email).toEqual(email);
+    expect(user.password).not.toEqual(password);
 
-    const registerResponse: any = await graphqlTestCall(
-      registerMutation,
-      {
-        email: testUser.email,
-        password: testUser.password
-      },
-      context
-    );
-
-    expect(registerResponse).toEqual({ data: { register: null } });
-
-    const dbUser = await User.findOne({ where: { email: testUser.email } });
-
-    expect(dbUser).toBeDefined();
-    expect(dbUser!.email).toEqual(testUser.email);
-    expect(dbUser!.password).not.toEqual(testUser.password);
+    const response2 = await client.register(email, password);
+    expect(response2.data.register).toHaveLength(1);
+    expect(response2.data.register[0]).toEqual({
+      path: "email",
+      message: "Already taken"
+    });
   });
 
-  test("Catch duplicate email", async () => {
-    const testUser = { email: "bob@bob.com", password: "bob" };
+  // it("check bad email", async () => {
+  //   const client = new TestClient(process.env.TEST_HOST as string);
+  //   const response3 = await client.register("b", password);
+  //   expect(response3.data).toEqual({
+  //     register: [
+  //       {
+  //         path: "email",
+  //         message: emailNotLongEnough
+  //       },
+  //       {
+  //         path: "email",
+  //         message: invalidEmail
+  //       }
+  //     ]
+  //   });
+  // });
 
-    const registerResponse2: any = await graphqlTestCall(
-      registerMutation,
-      {
-        email: testUser.email,
-        password: testUser.password
-      },
-      context
-    );
+  // it("check bad password", async () => {
+  //   // catch bad password
+  //   const client = new TestClient(process.env.TEST_HOST as string);
+  //   const response4 = await client.register(email, "ad");
+  //   expect(response4.data).toEqual({
+  //     register: [
+  //       {
+  //         path: "password",
+  //         message: passwordNotLongEnough
+  //       }
+  //     ]
+  //   });
+  // });
 
-    expect(registerResponse2.data.register).toHaveLength(1);
-    expect(registerResponse2.data.register[0].path).toEqual("email");
-  });
-
-  test("Catch bad email", async () => {
-    const testUser = { email: "bob", password: "bob" };
-
-    const registerResponse: any = await graphqlTestCall(
-      registerMutation,
-      {
-        email: testUser.email,
-        password: testUser.password
-      },
-      context
-    );
-
-    expect(registerResponse.data.register).toHaveLength(1);
-    expect(registerResponse.data.register[0].path).toEqual("email");
-  });
-
-  test("Catch bad password", async () => {
-    const testUser = { email: "bob@bob.com", password: "bo" };
-
-    const registerResponse: any = await graphqlTestCall(
-      registerMutation,
-      {
-        email: testUser.email,
-        password: testUser.password
-      },
-      context
-    );
-
-    expect(registerResponse.data.register).toHaveLength(1);
-    expect(registerResponse.data.register[0].path).toEqual("password");
-  });
-
-  test("Catch bad email and password", async () => {
-    const testUser = { email: "bob", password: "bo" };
-
-    const registerResponse: any = await graphqlTestCall(
-      registerMutation,
-      {
-        email: testUser.email,
-        password: testUser.password
-      },
-      context
-    );
-
-    expect(registerResponse.data.register).toHaveLength(2);
-    expect(registerResponse.data.register[0].path).toEqual("email");
-    expect(registerResponse.data.register[1].path).toEqual("password");
-  });
+  // it("check bad password and bad email", async () => {
+  //   const client = new TestClient(process.env.TEST_HOST as string);
+  //   const response5 = await client.register("df", "ad");
+  //   expect(response5.data).toEqual({
+  //     register: [
+  //       {
+  //         path: "email",
+  //         message: emailNotLongEnough
+  //       },
+  //       {
+  //         path: "email",
+  //         message: invalidEmail
+  //       },
+  //       {
+  //         path: "password",
+  //         message: passwordNotLongEnough
+  //       }
+  //     ]
+  //   });
+  // });
 });

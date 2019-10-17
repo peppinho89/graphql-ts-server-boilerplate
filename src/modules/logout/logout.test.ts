@@ -1,15 +1,16 @@
-import { createTypeormConn } from "../../utils/createTypeormConn";
 import { User } from "../../entity/User";
 import { Connection } from "typeorm";
 import { TestClient } from "../../utils/TestClient";
+import { createTestConn } from "../../testUtils/createTestConn";
 
-let userId: string;
 let conn: Connection;
 const email = "bob@bob.com";
 const password = "bobby";
 
+let userId: string;
+
 beforeAll(async () => {
-  conn = await createTypeormConn();
+  conn = await createTestConn(true);
   const user = await User.create({
     email,
     password,
@@ -22,16 +23,12 @@ afterAll(async () => {
   conn.close();
 });
 
-describe("me", () => {
-  test("return null if no cookie", async () => {
+describe("logout", () => {
+  test("test logging out a user", async () => {
     const client = new TestClient(process.env.TEST_HOST as string);
-    const response = await client.me();
-    expect(response.data.me).toBeNull();
-  });
 
-  test("get current user", async () => {
-    const client = new TestClient(process.env.TEST_HOST as string);
     await client.login(email, password);
+
     const response = await client.me();
 
     expect(response.data).toEqual({
@@ -40,5 +37,11 @@ describe("me", () => {
         email
       }
     });
+
+    await client.logout();
+
+    const response2 = await client.me();
+
+    expect(response2.data.me).toBeNull();
   });
 });
