@@ -6,8 +6,8 @@ import { createForgotPasswordLink } from "./createForgotPasswordLink";
 import * as Redis from "ioredis";
 import { forgotPasswordLockAccount } from "../../utils/forgotPasswordLockAccount";
 
-const email = "bob@bob.com";
-const password = "bobby";
+const email = "bob1@test.com";
+const password = "bob1";
 const newPassword = "newP";
 
 let conn: Connection;
@@ -15,7 +15,7 @@ const redis = new Redis();
 let userId: string;
 
 beforeAll(async () => {
-  conn = await createTestConn(true);
+  conn = await createTestConn();
   const user = await User.create({
     email,
     password,

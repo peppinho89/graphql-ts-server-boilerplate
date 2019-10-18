@@ -4,13 +4,13 @@ import { TestClient } from "../../testUtils/TestClient";
 import { createTestConn } from "../../testUtils/createTestConn";
 
 let conn: Connection;
-const email = "bob@bob.com";
-const password = "bobby";
+const email = "bob3@test.com";
+const password = "bob3";
 
 let userId: string;
 
 beforeAll(async () => {
-  conn = await createTestConn(true);
+  conn = await createTestConn();
   const user = await User.create({
     email,
     password,

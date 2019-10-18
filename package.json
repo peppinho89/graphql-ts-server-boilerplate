@@ -53,7 +53,7 @@
   },
   "scripts": {
     "start": "SET NODE_ENV=development&nodemon --exec ts-node --files src/index.ts",
-    "test": "SET NODE_ENV=test&jest --watch --runInBand",
+    "test": "SET NODE_ENV=test&jest --no-cache",
     "start-server-test": "SET NODE_ENV=test&nodemon --exec ts-node --files src/index.ts",
     "gen-schema-types": "ts-node --files src/scripts/generateTypes.ts"
   },

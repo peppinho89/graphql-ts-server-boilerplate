@@ -14,11 +14,11 @@ let userId = "";
 let connection: Connection;
 
 beforeAll(async () => {
-  connection = await createTestConn(true);
+  connection = await createTestConn();
 
   const user = await User.create({
-    email: "bob@bob.com",
-    password: "bobby"
+    email: "bob6@test.com",
+    password: "bob6"
   }).save();
   userId = user.id;
 });

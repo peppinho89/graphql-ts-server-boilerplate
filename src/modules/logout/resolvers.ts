@@ -8,6 +8,11 @@ export const resolvers: IResolvers = {
 
       if (userId) {
         removeAllUserSessions(userId, redis);
+        session.destroy((err: any) => {
+          if (err) {
+            console.log(err);
+          }
+        });
         return true;
       }
       return false;

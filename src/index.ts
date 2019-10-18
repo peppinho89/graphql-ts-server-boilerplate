@@ -72,7 +72,7 @@ const startServer = async () => {
   server.applyMiddleware({ app, cors });
 
   if (process.env.NODE_ENV === "test") {
-    await createTestConn();
+    await createTestConn(true);
     await redis.flushall();
   } else {
     await createTypeormConn();

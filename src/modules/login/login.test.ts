@@ -3,12 +3,12 @@ import { Connection } from "typeorm";
 import { TestClient } from "../../testUtils/TestClient";
 import { createTestConn } from "../../testUtils/createTestConn";
 
-const email = "bob@bob.com";
-const password = "bobby";
+const email = "bob2@test.com";
+const password = "bob2";
 
 let conn: Connection;
 beforeAll(async () => {
-  conn = await createTestConn(true);
+  conn = await createTestConn();
 });
 afterAll(async () => {
   conn.close();
