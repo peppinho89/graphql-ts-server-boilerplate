@@ -73,6 +73,7 @@ const startServer = async () => {
 
   if (process.env.NODE_ENV === "test") {
     await createTestConn();
+    await redis.flushall();
   } else {
     await createTypeormConn();
   }

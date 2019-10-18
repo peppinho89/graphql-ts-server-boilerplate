@@ -6,8 +6,3 @@ type User {
 type Query {
   me: User
 }
-
-type Error {
-  path: String!
-  message: String!
-}

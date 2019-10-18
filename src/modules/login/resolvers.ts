@@ -27,9 +27,6 @@ const invalidLoginResponse = [
 ];
 
 export const resolvers: IResolvers = {
-  Query: {
-    dummy: () => "dummy"
-  },
   Mutation: {
     login: async (
       _,

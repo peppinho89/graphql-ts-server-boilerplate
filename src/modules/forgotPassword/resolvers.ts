@@ -13,9 +13,6 @@ const schema = yup.object().shape({
 });
 
 export const resolvers: IResolvers = {
-  Query: {
-    dummy: () => "dummy"
-  },
   Mutation: {
     sendForgotPasswordEmail: async (
       _,
